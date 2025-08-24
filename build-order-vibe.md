@@ -105,8 +105,8 @@ Each main task includes subtasks to guide development, testing, and deployment.
 
 * [x] Create `Dashboard` page
 * [x] Fetch and display today's vibes side by side
-* [ ] Render 7-day mood line chart using Recharts
-* [ ] Display static insight (e.g., "You're both feeling balanced this week.")
+* [x] Render 7-day mood line chart using Recharts
+* [x] Display static insight (e.g., "You're both feeling balanced this week.")
 
 ## 7. API & Frontend Integration
 

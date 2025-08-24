@@ -7,6 +7,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useQuery } from "convex/react";
 import { api } from "@/lib/convex";
 import { useAuth } from "@/lib/auth-context";
+import { 
+  LineChart, 
+  Line, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  Legend, 
+  ResponsiveContainer 
+} from "recharts";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -32,6 +42,40 @@ export default function DashboardPage() {
   const { vibes, users } = useQuery(api.functions.vibes.getVibes, { 
     relationshipId: relationshipId as any 
   }) || { vibes: [], users: [] };
+
+  // Prepare data for the chart
+  const chartData = vibes && vibes.length > 0 ? vibes.map(vibe => ({
+    date: vibe.date,
+    userA: vibe.userA?.mood || 0,
+    userB: vibe.userB?.mood || 0,
+  })).filter(item => item.userA > 0 || item.userB > 0) : [];
+
+  // Generate a static insight
+  const generateInsight = () => {
+    if (!vibes || vibes.length === 0) {
+      return "Start sharing vibes with your partner to see insights!";
+    }
+    
+    // Simple insight generation based on recent moods
+    const recentVibes = vibes.slice(0, 3);
+    const userAVibes = recentVibes.map(v => v.userA?.mood).filter(Boolean) as number[];
+    const userBVibes = recentVibes.map(v => v.userB?.mood).filter(Boolean) as number[];
+    
+    const userAAvg = userAVibes.length > 0 ? userAVibes.reduce((a, b) => a + b, 0) / userAVibes.length : 0;
+    const userBAvg = userBVibes.length > 0 ? userBVibes.reduce((a, b) => a + b, 0) / userBVibes.length : 0;
+    
+    if (userAAvg >= 4 && userBAvg >= 4) {
+      return "You're both feeling great this week! Keep up the positive energy.";
+    } else if (userAAvg <= 2 && userBAvg <= 2) {
+      return "It seems like you're both having a tough time. Consider checking in with each other.";
+    } else if (Math.abs(userAAvg - userBAvg) >= 2) {
+      return "You and your partner seem to be experiencing different emotions lately. Communication is key!";
+    } else {
+      return "You're both feeling balanced this week. Keep maintaining this harmony!";
+    }
+  };
+
+  const insight = generateInsight();
 
   const handleLogout = async () => {
     try {
@@ -76,12 +120,57 @@ export default function DashboardPage() {
             <CardDescription>Your mood trends over time</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-64 flex items-center justify-center">
-              <p>Chart will appear here</p>
-            </div>
+            {chartData.length > 0 ? (
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart
+                    data={chartData}
+                    margin={{
+                      top: 5,
+                      right: 30,
+                      left: 20,
+                      bottom: 5,
+                    }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="date" />
+                    <YAxis domain={[1, 5]} />
+                    <Tooltip />
+                    <Legend />
+                    <Line 
+                      type="monotone" 
+                      dataKey="userA" 
+                      name="Your Mood" 
+                      stroke="#8884d8" 
+                      activeDot={{ r: 8 }} 
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="userB" 
+                      name="Partner's Mood" 
+                      stroke="#82ca9d" 
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="h-64 flex items-center justify-center">
+                <p>No mood data yet. Start by sharing your first vibe!</p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
+      
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>Weekly Insight</CardTitle>
+          <CardDescription>Your relationship mood snapshot</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-lg">{insight}</p>
+        </CardContent>
+      </Card>
       
       <Card>
         <CardHeader>
