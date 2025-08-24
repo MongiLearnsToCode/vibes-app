@@ -1,23 +1,60 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "convex/react";
 import { api } from "@/lib/convex";
+import { useAuth } from "@/lib/auth-context";
 
 export default function DashboardPage() {
-  // In a real implementation, we would get the relationshipId from context
-  // For now, we'll use a placeholder value
-  const relationshipId = "relationship_123" as any;
+  const router = useRouter();
+  const { user, logout } = useAuth();
+  const [relationshipId, setRelationshipId] = useState<string | null>(null);
 
-  const { vibes, users } = useQuery(api.functions.vibes.getVibes, { relationshipId }) || { vibes: [], users: [] };
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!user) {
+      router.push("/login");
+    }
+  }, [user, router]);
+
+  // In a real implementation, we would get the relationshipId from the user's relationships
+  // For now, we'll use a placeholder value
+  useEffect(() => {
+    if (user) {
+      // Simulate fetching relationshipId
+      setRelationshipId("relationship_123");
+    }
+  }, [user]);
+
+  const { vibes, users } = useQuery(api.functions.vibes.getVibes, { 
+    relationshipId: relationshipId as any 
+  }) || { vibes: [], users: [] };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Your Vibes Dashboard</h1>
-        <Button>Logout</Button>
+        <Button onClick={handleLogout}>Logout</Button>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -27,7 +64,7 @@ export default function DashboardPage() {
             <CardDescription>Share how you're feeling today</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button className="w-full" onClick={() => window.location.href = "/vibe-check"}>
+            <Button className="w-full" onClick={() => router.push("/vibe-check")}>
               Share Today's Vibe
             </Button>
           </CardContent>

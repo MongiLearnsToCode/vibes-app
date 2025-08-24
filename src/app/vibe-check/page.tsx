@@ -1,34 +1,63 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@/lib/convex";
+import { useAuth } from "@/lib/auth-context";
 
 const moodEmojis = ["😩", "😔", "😐", "😊", "😍"];
 const moodLabels = ["Awful", "Bad", "Okay", "Good", "Great"];
 
 export default function VibeCheckPage() {
+  const router = useRouter();
+  const { user } = useAuth();
   const [mood, setMood] = useState(3);
   const [note, setNote] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const [relationshipId, setRelationshipId] = useState<string | null>(null);
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!user) {
+      router.push("/login");
+    }
+  }, [user, router]);
+
+  // In a real implementation, we would get the relationshipId from the user's relationships
+  // For now, we'll use a placeholder value
+  useEffect(() => {
+    if (user) {
+      // Simulate fetching relationshipId
+      setRelationshipId("relationship_123");
+    }
+  }, [user]);
 
   const submitVibe = useMutation(api.functions.vibes.submitVibe);
+  const { vibes } = useQuery(api.functions.vibes.getVibes, { 
+    relationshipId: relationshipId as any 
+  }) || { vibes: [] };
+
+  // Check if user has already submitted a vibe today
+  const hasSubmittedToday = vibes && vibes.length > 0 && 
+    (vibes[0].userA || vibes[0].userB) && 
+    ((vibes[0].userA && vibes[0].userA.mood) || (vibes[0].userB && vibes[0].userB.mood));
 
   const handleSubmit = async () => {
-    // In a real implementation, we would get the relationshipId and userId from context
-    // For now, we'll use placeholder values
-    const relationshipId = "relationship_123" as any;
-    const userId = "user_123" as any;
+    if (!relationshipId || !user) {
+      setError("Not ready to submit. Please try again.");
+      return;
+    }
 
     try {
       await submitVibe({
-        relationshipId,
-        userId,
+        relationshipId: relationshipId as any,
+        userId: user._id as any,
         mood,
         note,
       });
@@ -37,6 +66,14 @@ export default function VibeCheckPage() {
       setError(err instanceof Error ? err.message : "An error occurred while submitting your vibe");
     }
   };
+
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container py-8">
@@ -51,6 +88,11 @@ export default function VibeCheckPage() {
             <div className="text-center py-8">
               <h3 className="text-xl font-semibold mb-2">Vibe Submitted!</h3>
               <p className="text-muted-foreground">Thanks for sharing your vibe. Check back tomorrow!</p>
+            </div>
+          ) : hasSubmittedToday ? (
+            <div className="text-center py-8">
+              <h3 className="text-xl font-semibold mb-2">Already Submitted Today</h3>
+              <p className="text-muted-foreground">You've already shared your vibe today. Check back tomorrow!</p>
             </div>
           ) : (
             <>
