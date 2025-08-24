@@ -162,9 +162,9 @@ Each main task includes subtasks to guide development, testing, and deployment.
 
 ### Subtask: Convex Backend
 
-* [ ] Deploy Convex project via CLI: `npx convex deploy`
-* [ ] Configure environment variables
-* [ ] Verify deployed functions accessible from Next.js
+* [x] Deploy Convex project via CLI: `npx convex deploy`
+* [x] Configure environment variables
+* [x] Verify deployed functions accessible from Next.js
 
 ### Subtask: Frontend Deployment
 
