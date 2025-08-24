@@ -88,25 +88,25 @@ Each main task includes subtasks to guide development, testing, and deployment.
 
 ### Subtask: Authentication Flow
 
-* [ ] Create `Signup` page (name, email, password)
-* [ ] Create `Login` page
+* [x] Create `Signup` page (name, email, password)
+* [x] Create `Login` page
 * [ ] Connect forms to Convex Auth hooks
 * [ ] Implement Logout functionality
 
 ### Subtask: Vibe Check Page
 
-* [ ] Create `VibeCheck` component
-* [ ] Implement emoji slider (1–5: 😩 → 😊)
-* [ ] Add optional text input (max 140 characters)
+* [x] Create `VibeCheck` component
+* [x] Implement emoji slider (1–5: 😩 → 😊)
+* [x] Add optional text input (max 140 characters)
 * [ ] Disable submit if entry already exists for today
-* [ ] Show success confirmation
+* [x] Show success confirmation
 
 ### Subtask: Dashboard
 
-* [ ] Create `Dashboard` page
+* [x] Create `Dashboard` page
 * [ ] Fetch and display today’s vibes side by side
 * [ ] Render 7-day mood line chart using Recharts
-* [ ] Display static insight (e.g., “You’re both feeling balanced this week.”)
+* [ ] Display static insight (e.g., "You're both feeling balanced this week.")
 
 ---
 
