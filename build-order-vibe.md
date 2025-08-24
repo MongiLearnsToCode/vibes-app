@@ -74,11 +74,11 @@ Each main task includes subtasks to guide development, testing, and deployment.
 
 ## 4. PWA Integration
 
-* [ ] Configure `next-pwa` in `next.config.js`:
+* [x] Configure `next-pwa` in `next.config.js`:
 
-  * [ ] App name, short name, theme color
-  * [ ] Icons (192x192, 512x512) in `/public/icons/`
-  * [ ] Generate `manifest.json` and service worker
+  * [x] App name, short name, theme color
+  * [x] Icons (192x192, 512x512) in `/public/icons/`
+  * [x] Generate `manifest.json` and service worker
 * [ ] Verify PWA install prompt appears in browser
 * [ ] Test offline caching of core assets (HTML, CSS, JS)
 
