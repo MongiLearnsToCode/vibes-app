@@ -121,7 +121,7 @@ Each main task includes subtasks to guide development, testing, and deployment.
   * [x] `submitVibe(mood, note)`
   * [x] `getVibes(relationshipId)`
 * [x] Handle loading and error states in UI
-* [ ] Test all queries and mutations end-to-end
+* [x] Test all queries and mutations end-to-end
 
 ---
 
