@@ -127,17 +127,17 @@ Each main task includes subtasks to guide development, testing, and deployment.
 
 ## 6. Offline Sync Functionality
 
-* [ ] On vibe submit:
+* [x] On vibe submit:
 
-  * [ ] Check network status
-  * [ ] If online → send to Convex mutation
-  * [ ] If offline → save to `localStorage` with timestamp and relationship ID
-* [ ] On app load:
+  * [x] Check network status
+  * [x] If online → send to Convex mutation
+  * [x] If offline → save to `localStorage` with timestamp and relationship ID
+* [x] On app load:
 
-  * [ ] Check `localStorage` for unsent vibes
-  * [ ] Attempt to sync pending entries to Convex
-  * [ ] Remove from `localStorage` after successful sync
-* [ ] Show user feedback: “Vibe saved offline. Will sync when online.”
+  * [x] Check `localStorage` for unsent vibes
+  * [x] Attempt to sync pending entries to Convex
+  * [x] Remove from `localStorage` after successful sync
+* [x] Show user feedback: "Vibe saved offline. Will sync when online."
 
 ---
 

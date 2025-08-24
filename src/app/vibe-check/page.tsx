@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/lib/convex";
 import { useAuth } from "@/lib/auth-context";
+import { OfflineSync, OfflineVibe } from "@/lib/offline-sync";
+import { toast } from "sonner";
 
 const moodEmojis = ["😩", "😔", "😐", "😊", "😍"];
 const moodLabels = ["Awful", "Bad", "Okay", "Good", "Great"];
@@ -21,6 +23,7 @@ export default function VibeCheckPage() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
   const [relationshipId, setRelationshipId] = useState<string | null>(null);
+  const [isOnline, setIsOnline] = useState(true);
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -28,6 +31,22 @@ export default function VibeCheckPage() {
       router.push("/login");
     }
   }, [user, router]);
+
+  // Check online status
+  useEffect(() => {
+    setIsOnline(navigator.onLine);
+    
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
 
   // In a real implementation, we would get the relationshipId from the user's relationships
   // For now, we'll use a placeholder value
@@ -54,6 +73,19 @@ export default function VibeCheckPage() {
       return;
     }
 
+    // If offline, save to localStorage
+    if (!isOnline) {
+      OfflineSync.saveVibe({
+        relationshipId,
+        userId: user._id as any,
+        mood,
+        note,
+      });
+      setSubmitted(true);
+      toast.success("Vibe saved offline. Will sync when online.");
+      return;
+    }
+
     try {
       await submitVibe({
         relationshipId: relationshipId as any,
@@ -66,6 +98,36 @@ export default function VibeCheckPage() {
       setError(err instanceof Error ? err.message : "An error occurred while submitting your vibe");
     }
   };
+
+  // Try to sync offline vibes when coming online
+  useEffect(() => {
+    if (isOnline && user && relationshipId) {
+      const syncOfflineVibes = async () => {
+        const offlineVibes = OfflineSync.getOfflineVibes();
+        if (offlineVibes.length === 0) return;
+
+        toast.info(`Syncing ${offlineVibes.length} offline vibes...`);
+
+        for (const offlineVibe of offlineVibes) {
+          try {
+            await submitVibe({
+              relationshipId: offlineVibe.relationshipId as any,
+              userId: offlineVibe.userId as any,
+              mood: offlineVibe.mood,
+              note: offlineVibe.note,
+            });
+            OfflineSync.removeVibe(offlineVibe.id);
+          } catch (err) {
+            console.error("Failed to sync offline vibe:", err);
+          }
+        }
+
+        toast.success("Offline vibes synced successfully!");
+      };
+
+      syncOfflineVibes();
+    }
+  }, [isOnline, user, relationshipId, submitVibe]);
 
   if (!user) {
     return (
@@ -83,6 +145,11 @@ export default function VibeCheckPage() {
           <CardDescription>Share how you're feeling today with your partner</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
+          {!isOnline && (
+            <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4">
+              <p>You are currently offline. Your vibe will be saved and synced when you're back online.</p>
+            </div>
+          )}
           {error && <div className="text-red-500 text-sm">{error}</div>}
           {submitted ? (
             <div className="text-center py-8">
@@ -134,8 +201,8 @@ export default function VibeCheckPage() {
                 </div>
               </div>
               
-              <Button className="w-full" onClick={handleSubmit}>
-                Submit Today's Vibe
+              <Button className="w-full" onClick={handleSubmit} disabled={!isOnline && !navigator.onLine}>
+                {isOnline ? "Submit Today's Vibe" : "Save for Later"}
               </Button>
             </>
           )}
