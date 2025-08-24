@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useMutation } from "convex/react";
 import { api } from "@/lib/convex";
 
 export default function SignupPage() {
@@ -16,6 +17,8 @@ export default function SignupPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const registerUser = useMutation(api.functions.auth.registerUser);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +38,7 @@ export default function SignupPage() {
     
     try {
       // Register user with Convex
-      await api.functions.auth.registerUser({
+      await registerUser({
         name,
         email,
         password,

@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { useMutation } from "convex/react";
+import { api } from "@/lib/convex";
 
 const moodEmojis = ["😩", "😔", "😐", "😊", "😍"];
 const moodLabels = ["Awful", "Bad", "Okay", "Good", "Great"];
@@ -13,11 +15,27 @@ export default function VibeCheckPage() {
   const [mood, setMood] = useState(3);
   const [note, setNote] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = () => {
-    // In a real implementation, we would submit this to Convex
-    console.log("Submitting vibe:", { mood, note });
-    setSubmitted(true);
+  const submitVibe = useMutation(api.functions.vibes.submitVibe);
+
+  const handleSubmit = async () => {
+    // In a real implementation, we would get the relationshipId and userId from context
+    // For now, we'll use placeholder values
+    const relationshipId = "relationship_123" as any;
+    const userId = "user_123" as any;
+
+    try {
+      await submitVibe({
+        relationshipId,
+        userId,
+        mood,
+        note,
+      });
+      setSubmitted(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred while submitting your vibe");
+    }
   };
 
   return (
@@ -28,6 +46,7 @@ export default function VibeCheckPage() {
           <CardDescription>Share how you're feeling today with your partner</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
+          {error && <div className="text-red-500 text-sm">{error}</div>}
           {submitted ? (
             <div className="text-center py-8">
               <h3 className="text-xl font-semibold mb-2">Vibe Submitted!</h3>

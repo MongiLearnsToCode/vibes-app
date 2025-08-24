@@ -90,7 +90,7 @@ Each main task includes subtasks to guide development, testing, and deployment.
 
 * [x] Create `Signup` page (name, email, password)
 * [x] Create `Login` page
-* [ ] Connect forms to Convex Auth hooks
+* [x] Connect forms to Convex Auth hooks
 * [ ] Implement Logout functionality
 
 ### Subtask: Vibe Check Page
@@ -104,9 +104,24 @@ Each main task includes subtasks to guide development, testing, and deployment.
 ### Subtask: Dashboard
 
 * [x] Create `Dashboard` page
-* [ ] Fetch and display today’s vibes side by side
+* [x] Fetch and display today's vibes side by side
 * [ ] Render 7-day mood line chart using Recharts
 * [ ] Display static insight (e.g., "You're both feeling balanced this week.")
+
+## 7. API & Frontend Integration
+
+* [x] Set up Convex client with `useMutation` and `useQuery`
+* [ ] Implement API service functions:
+
+  * [x] `registerUser()`
+  * [x] `loginUser()`
+  * [ ] `logoutUser()`
+  * [ ] `createRelationship()`
+  * [ ] `joinRelationship(code)`
+  * [x] `submitVibe(mood, note)`
+  * [x] `getVibes(relationshipId)`
+* [x] Handle loading and error states in UI
+* [ ] Test all queries and mutations end-to-end
 
 ---
 

@@ -1,9 +1,18 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useQuery } from "convex/react";
+import { api } from "@/lib/convex";
 
 export default function DashboardPage() {
+  // In a real implementation, we would get the relationshipId from context
+  // For now, we'll use a placeholder value
+  const relationshipId = "relationship_123" as any;
+
+  const { vibes, users } = useQuery(api.functions.vibes.getVibes, { relationshipId }) || { vibes: [], users: [] };
+
   return (
     <div className="container py-8">
       <div className="flex justify-between items-center mb-8">
@@ -18,7 +27,9 @@ export default function DashboardPage() {
             <CardDescription>Share how you're feeling today</CardDescription>
           </CardHeader>
           <CardContent>
-            <p>Your vibe check will appear here</p>
+            <Button className="w-full" onClick={() => window.location.href = "/vibe-check"}>
+              Share Today's Vibe
+            </Button>
           </CardContent>
         </Card>
         
@@ -28,7 +39,9 @@ export default function DashboardPage() {
             <CardDescription>Your mood trends over time</CardDescription>
           </CardHeader>
           <CardContent>
-            <p>Your mood chart will appear here</p>
+            <div className="h-64 flex items-center justify-center">
+              <p>Chart will appear here</p>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -39,7 +52,45 @@ export default function DashboardPage() {
           <CardDescription>Your last 7 days of vibes</CardDescription>
         </CardHeader>
         <CardContent>
-          <p>Your recent vibes will appear here</p>
+          {vibes && vibes.length > 0 ? (
+            <div className="space-y-4">
+              {vibes.map((vibe, index) => (
+                <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="font-medium">{vibe.date}</div>
+                  <div className="flex space-x-4">
+                    <div>
+                      <div>User A</div>
+                      {vibe.userA ? (
+                        <div className="flex items-center">
+                          <span className="text-2xl">
+                            {["😩", "😔", "😐", "😊", "😍"][vibe.userA.mood - 1]}
+                          </span>
+                          {vibe.userA.note && <span className="ml-2 text-sm">"{vibe.userA.note}"</span>}
+                        </div>
+                      ) : (
+                        <div className="text-muted-foreground">No vibe yet</div>
+                      )}
+                    </div>
+                    <div>
+                      <div>User B</div>
+                      {vibe.userB ? (
+                        <div className="flex items-center">
+                          <span className="text-2xl">
+                            {["😩", "😔", "😐", "😊", "😍"][vibe.userB.mood - 1]}
+                          </span>
+                          {vibe.userB.note && <span className="ml-2 text-sm">"{vibe.userB.note}"</span>}
+                        </div>
+                      ) : (
+                        <div className="text-muted-foreground">No vibe yet</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p>No vibes yet. Start by sharing your first vibe!</p>
+          )}
         </CardContent>
       </Card>
     </div>
