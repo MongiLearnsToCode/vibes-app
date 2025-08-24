@@ -57,18 +57,18 @@ Each main task includes subtasks to guide development, testing, and deployment.
 
 ## 3. Frontend Project Setup (Next.js)
 
-* [ ] Create Next.js app with TypeScript: `npx create-next-app@latest frontend --ts`
-* [ ] Install dependencies:
+* [x] Create Next.js app with TypeScript: `npx create-next-app@latest frontend --ts`
+* [x] Install dependencies:
 
-  * [ ] `tailwindcss`, `postcss`, `autoprefixer`
-  * [ ] `@convex-dev/react`
-  * [ ] `recharts`
-  * [ ] `shadcn/ui`
-  * [ ] `next-pwa`
-* [ ] Initialize Tailwind: `npx tailwindcss init -p`
-* [ ] Set up shadcn/ui (Button, Card, Input, Label, etc.)
-* [ ] Configure `next.config.js` with PWA support
-* [ ] Create `lib/convex.ts` for Convex client integration
+  * [x] `tailwindcss`, `postcss`, `autoprefixer`
+  * [x] `@convex-dev/react`
+  * [x] `recharts`
+  * [x] `shadcn/ui`
+  * [x] `next-pwa`
+* [x] Initialize Tailwind: `npx tailwindcss init -p`
+* [x] Set up shadcn/ui (Button, Card, Input, Label, etc.)
+* [x] Configure `next.config.js` with PWA support
+* [x] Create `lib/convex.ts` for Convex client integration
 
 ---
 
